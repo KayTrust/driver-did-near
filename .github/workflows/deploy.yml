@@ -3,7 +3,10 @@ name: Build, Test & Deploy to Azure
 on:
   push:
     branches:
-      - master
+      - main
+
+env:
+  IMAGE_NAME: ghcr.io/kaytrust/driver-did-near
 
 jobs:
   build-test-push:
@@ -32,15 +35,15 @@ jobs:
       - name: 🐳 Log in to GitHub Container Registry
         run: echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ secrets.GHCR_USERNAME }} --password-stdin
 
-      - name: 🔨 Build Docker image with version and latest tags
+      - name: 🔨 Build Docker image
         run: |
-          docker build -t ghcr.io/${{ github.repository }}:${{ steps.version.outputs.version }} .
-          docker tag ghcr.io/${{ github.repository }}:${{ steps.version.outputs.version }} ghcr.io/${{ github.repository }}:latest
+          docker build -t $IMAGE_NAME:${{ steps.version.outputs.version }} .
+          docker tag $IMAGE_NAME:${{ steps.version.outputs.version }} $IMAGE_NAME:latest
 
       - name: 🚀 Push Docker images to GHCR
         run: |
-          docker push ghcr.io/${{ github.repository }}:${{ steps.version.outputs.version }}
-          docker push ghcr.io/${{ github.repository }}:latest
+          docker push $IMAGE_NAME:${{ steps.version.outputs.version }}
+          docker push $IMAGE_NAME:latest
 
   deploy:
     name: Deploy to Azure Web App for Containers
@@ -48,8 +51,13 @@ jobs:
     needs: build-test-push
 
     steps:
-      - name: 📦 Deploy latest image to Azure
+      - name: 📦 Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
           publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
-          images: ghcr.io/${{ github.repository }}:latest
+          images: ${{ env.IMAGE_NAME }}:latest
+          configuration-option-settings: |
+            -name WEBSITES_PORT -value 3000
+            -name CONTRACT_ID -value ${{ vars.CONTRACT_ID }}
+            -name RPC_URL -value ${{ vars.RPC_URL }}
+            -name NETWORK_ID -value ${{ vars.NETWORK_ID }}
