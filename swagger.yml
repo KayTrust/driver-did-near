@@ -1,0 +1,57 @@
+openapi: 3.0.4
+servers:
+  - url: http://localhost:3000/api
+    description: Development server
+info:
+  description: This is a provider resolver for did near
+  version: "0.1.0"
+  title: Near Resolver Driver
+paths:
+  /identifiers/{identifier}:
+    get:
+      summary: Resolve a DID.
+      description:
+        <p>This endpoint resolves a DID. As input it takes the DID, plus DID resolution <a href="https://www.w3.org/TR/did-core/#did-resolution-options">options</a>. The output is a DID document in one of the supported representations, plus metadata.</p> <p>See the <a href="https://w3c-ccg.github.io/did-resolution/">DID Resolution</a> specification for additional details.</p>
+      operationId: resolve
+      parameters:
+        - in: path
+          required: true
+          name: identifier
+          schema:
+            type: string
+          description: The DID to be resolved.
+          examples:
+            example1:
+              value: did:near:CF5RiJYh4EVmEt8UADTjoP3XaZo1NPWxv6w5TmkLqjpR
+              description: A DID using the `near` method.
+        - in: header
+          required: false
+          name: Accept
+          schema:
+            type: string
+          description: The requested media type of the DID document representation or DID resolution result. See <a href="https://www.w3.org/TR/did-core/#representations">https://www.w3.org/TR/did-core/#representations</a> and <a href="https://w3c-ccg.github.io/did-resolution/#did-resolution-result">https://w3c-ccg.github.io/did-resolution/#did-resolution-result</a>.
+          examples:
+            application/did+json:
+              value: application/json
+              description: Media type of a DID document (JSON representation).
+            application/did+ld+json:
+              value: application/did+ld+json
+              description: Media type of a DID document (JSON-LD representation).
+      responses:
+        '200':
+          description: successfully resolved!
+          content:
+            application/did+json:
+              schema:
+                type: object
+                description: The DID document (JSON representation).
+                example: {"didDocument":{"@context":"https://w3id.org/did/v1","id":"did:near:CF5RiJYh4EVmEt8UADTjoP3XaZo1NPWxv6w5TmkLqjpR","verificationMethod":[{"id":"did:near:CF5RiJYh4EVmEt8UADTjoP3XaZo1NPWxv6w5TmkLqjpR#owner","type":"Ed25519VerificationKey2018","controller":"did:near:CF5RiJYh4EVmEt8UADTjoP3XaZo1NPWxv6w5TmkLqjpR","publicKeyBase58":"CF5RiJYh4EVmEt8UADTjoP3XaZo1NPWxv6w5TmkLqjpR"}],"authentication":["did:near:CF5RiJYh4EVmEt8UADTjoP3XaZo1NPWxv6w5TmkLqjpR#owner"],"assertionMethod":["did:near:CF5RiJYh4EVmEt8UADTjoP3XaZo1NPWxv6w5TmkLqjpR#owner"]},"didResolutionMetadata":{"contentType":"application/did+json"},"didDocumentMetadata":{}}
+            application/did+ld+json:
+              schema:
+                type: object
+                description: The DID document (JSON-LD representation).
+                example: {"didDocument":{"@context":"https://w3id.org/did/v1","id":"did:near:CF5RiJYh4EVmEt8UADTjoP3XaZo1NPWxv6w5TmkLqjpR","verificationMethod":[{"id":"did:near:CF5RiJYh4EVmEt8UADTjoP3XaZo1NPWxv6w5TmkLqjpR#owner","type":"Ed25519VerificationKey2018","controller":"did:near:CF5RiJYh4EVmEt8UADTjoP3XaZo1NPWxv6w5TmkLqjpR","publicKeyBase58":"CF5RiJYh4EVmEt8UADTjoP3XaZo1NPWxv6w5TmkLqjpR"}],"authentication":["did:near:CF5RiJYh4EVmEt8UADTjoP3XaZo1NPWxv6w5TmkLqjpR#owner"],"assertionMethod":["did:near:CF5RiJYh4EVmEt8UADTjoP3XaZo1NPWxv6w5TmkLqjpR#owner"]},"didResolutionMetadata":{"contentType":"application/did+json"},"didDocumentMetadata":{}}
+        '400':
+          description: invalid input!
+        '500':
+          description: error!
