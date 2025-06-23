@@ -56,8 +56,8 @@ jobs:
         with:
           publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
           images: ${{ env.IMAGE_NAME }}:latest
-          configuration-option-settings: |
-            -name WEBSITES_PORT -value 3000
-            -name CONTRACT_ID -value ${{ vars.CONTRACT_ID }}
-            -name RPC_URL -value ${{ vars.RPC_URL }}
-            -name NETWORK_ID -value ${{ vars.NETWORK_ID }}
+          app-settings: |
+            WEBSITES_PORT=8000
+            CONTRACT_ID=${{ vars.CONTRACT_ID }}
+            RPC_URL=${{ vars.RPC_URL }}
+            NETWORK_ID=${{ vars.NETWORK_ID }}
