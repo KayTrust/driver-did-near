@@ -29,11 +29,11 @@ class Identifiers {
     }
 
     private loadOptions(): void {
-        if (process.env.CONTRACT_ID && process.env.RPC_URL && process.env.NETWORK_ID) {
-            this.options.contract_id = process.env.CONTRACT_ID;
-            this.options.rpc_url = process.env.RPC_URL;
-            this.options.network_id = process.env.NETWORK_ID;
-        }
+        this.options.contract_id = process.env.CONTRACT_ID || "";
+        this.options.rpc_url = process.env.RPC_URL || "https://rpc.testnet.near.org";
+        this.options.network_id = process.env.NETWORK_ID || "testnet";
+
+        if (!this.options.contract_id) logger.warn("CONTRACT_ID is required but was not provided. Set the environment variable to your DID registry contract address.");
     }
 
     private routes(): void {
